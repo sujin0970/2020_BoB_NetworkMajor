@@ -1,5 +1,10 @@
 # 2020_BoB_NetworkMajor
 
+<h2> Terminal Command </h2>
+<div>
+<img width = "700" src = "https://user-images.githubusercontent.com/58834907/90235811-dd564f00-de5c-11ea-91c0-e82e561f28d8.PNG" >
+</div>
+
 <h2> Case 1 : HTTP Pcap File Open </h2>
 <div>
 <img width = "700" src = "https://user-images.githubusercontent.com/58834907/90235398-31acff00-de5c-11ea-93a6-a52a39f44906.png">
