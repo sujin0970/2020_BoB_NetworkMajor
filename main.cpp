@@ -15,88 +15,92 @@
 
 
 std::string getProtocolTypeAsString(pcpp::ProtocolType protocolType) {
-	switch (protocolType)
-	{
-	case pcpp::Ethernet:
-	return "Ethernet";
+   switch (protocolType)
+   {
+   case pcpp::Ethernet:
+   return "Ethernet";
 
-	case pcpp::IPv4:
-	return "IPv4";
+   case pcpp::IPv4:
+   return "IPv4";
 
-	case pcpp::TCP:
-	return "TCP";
+   case pcpp::TCP:
+   return "TCP";
 
-	case pcpp::HTTPRequest:
+   case pcpp::HTTPRequest:
 
-	case pcpp::HTTPResponse:
-	return "HTTP";
+   case pcpp::HTTPResponse:
+   return "HTTP";
 
-	default:
-	return "Unknown";
-	}
+   default:
+   return "Unknown";
+   }
 }
 
 
 std::string printTcpFlags(pcpp::TcpLayer* tcpLayer){
-	std::string result = "";
+   std::string result = "";
 
-	if (tcpLayer->getTcpHeader()->synFlag == 1)
-	result += "SYN ";
+   if (tcpLayer->getTcpHeader()->synFlag == 1)
+   result += "SYN ";
 
-	if (tcpLayer->getTcpHeader()->ackFlag == 1)
-	result += "ACK ";
+   if (tcpLayer->getTcpHeader()->ackFlag == 1)
+   result += "ACK ";
 
-	if (tcpLayer->getTcpHeader()->pshFlag == 1)
-	result += "PSH ";
+   if (tcpLayer->getTcpHeader()->pshFlag == 1)
+   result += "PSH ";
 
-	if (tcpLayer->getTcpHeader()->cwrFlag == 1)
-	result += "CWR ";
+   if (tcpLayer->getTcpHeader()->cwrFlag == 1)
+   result += "CWR ";
 
-	if (tcpLayer->getTcpHeader()->urgFlag == 1)
-	result += "URG ";
+   if (tcpLayer->getTcpHeader()->urgFlag == 1)
+   result += "URG ";
 
-	if (tcpLayer->getTcpHeader()->eceFlag == 1)
-	result += "ECE ";
+   if (tcpLayer->getTcpHeader()->eceFlag == 1)
+   result += "ECE ";
 
-	if (tcpLayer->getTcpHeader()->rstFlag == 1)
-	result += "RST ";
+   if (tcpLayer->getTcpHeader()->rstFlag == 1)
+   result += "RST ";
 
-	if (tcpLayer->getTcpHeader()->finFlag == 1)
-	result += "FIN ";
+   if (tcpLayer->getTcpHeader()->finFlag == 1)
+   result += "FIN ";
 
-	return result;
+   return result;
 }
 
 
 std::string printTcpOptionType(pcpp::TcpOptionType optionType){
-	switch (optionType)
-	{
-	case pcpp::PCPP_TCPOPT_NOP:
-	return "NOP";
+   switch (optionType)
+   {
+   case pcpp::PCPP_TCPOPT_NOP:
+   return "NOP";
 
-	case pcpp::PCPP_TCPOPT_TIMESTAMP:
-	return "Timestamp";
+   case pcpp::PCPP_TCPOPT_TIMESTAMP:
+   return "Timestamp";
 
-	default:
+   default:
 
-	return "Other";
-	}
+   return "Other";
+   }
 }
 
 
 std::string printHttpMethod(pcpp::HttpRequestLayer::HttpMethod httpMethod){
-	switch (httpMethod)
-	{
-	case pcpp::HttpRequestLayer::HttpGET:
-	return "GET";
+   switch (httpMethod)
+   {
+   case pcpp::HttpRequestLayer::HttpGET:
+   return "GET";
 
-	case pcpp::HttpRequestLayer::HttpPOST:
-	return "POST";
+   case pcpp::HttpRequestLayer::HttpPOST:
+   return "POST";
 
-	default:
+   default:
 
-	return "Other";
-	}
+   return "Other";
+   }
+}
+
+uint8_t my_ntohs(uint8_t n) {
+return (n & 0xf0) >> 4 | (n & 0x0f) << 4;
 }
 
 
@@ -111,14 +115,14 @@ pcpp::IFileReaderDevice* reader = pcpp::IFileReaderDevice::getReader(filename);
 
 // verify that a reader interface was indeed created
 if (reader == NULL){
-	printf("Cannot determine reader for file type\n");
-	exit(1);
+   printf("Cannot determine reader for file type\n");
+   exit(1);
 }
 
 // open the reader for reading
 if (!reader->open()){
-	printf("Cannot open input.pcap for reading\n");
-	exit(1);
+   printf("Cannot open input.pcap for reading\n");
+   exit(1);
 }
 
 while(1) {
@@ -126,7 +130,7 @@ while(1) {
 pcpp::RawPacket rawPacket;
 
 if (!reader->getNextPacket(rawPacket)){
-	break;
+   break;
 }
 
 // parse the raw packet
@@ -139,24 +143,24 @@ int payload_length =0;
 int total_length =0;
 
 for (pcpp::Layer* curLayer = parsedPacket.getFirstLayer(); curLayer != NULL; curLayer = curLayer->getNextLayer()){
-	is_tcp++;
-	if(is_tcp==4){payload_length = (int)curLayer->getDataLen();}
-	if(is_tcp ==1 ){total_length = (int)curLayer->getDataLen();}
+   is_tcp++;
+   if(is_tcp==4){payload_length = (int)curLayer->getDataLen();}
+   if(is_tcp ==1 ){total_length = (int)curLayer->getDataLen();}
 
-	printf("Layer type: %s; Total data: %d [bytes]; Layer data: %d [bytes]; Layer payload: %d [bytes]\n",
-	getProtocolTypeAsString(curLayer->getProtocol()).c_str(), // get layer type
+   printf("Layer type: %s; Total data: %d [bytes]; Layer data: %d [bytes]; Layer payload: %d [bytes]\n",
+   getProtocolTypeAsString(curLayer->getProtocol()).c_str(), // get layer type
 
-	(int)curLayer->getDataLen(), // get total length of the layer
-	(int)curLayer->getHeaderLen(), // get the header length of the layer
-	(int)curLayer->getLayerPayloadSize()); // get the payload length of the layer (equals total length minus header length)
+   (int)curLayer->getDataLen(), // get total length of the layer
+   (int)curLayer->getHeaderLen(), // get the header length of the layer
+   (int)curLayer->getLayerPayloadSize()); // get the payload length of the layer (equals total length minus header length)
 }
 
 //****************Ethernet layer*****************
 pcpp::EthLayer* ethernetLayer = parsedPacket.getLayerOfType<pcpp::EthLayer>();
 
 if (ethernetLayer == NULL){
-	printf("Something went wrong, couldn't find Ethernet layer\n");
-	continue;
+   printf("Something went wrong, couldn't find Ethernet layer\n");
+   continue;
 }
 
 // print the source and dest MAC addresses and the Ether type
@@ -169,8 +173,8 @@ printf("Ether type = 0x%X\n", ntohs(ethernetLayer->getEthHeader()->etherType));
 pcpp::IPv4Layer* ipLayer = parsedPacket.getLayerOfType<pcpp::IPv4Layer>();
 
 if (ipLayer == NULL){
-	printf("Couldn't find IPv4 layer\n");
-	continue;
+   printf("Couldn't find IPv4 layer\n");
+   continue;
 }
 
 // print source and dest IP addresses, IP ID and TTL
@@ -184,8 +188,8 @@ printf("TTL: %d\n", ipLayer->getIPv4Header()->timeToLive);
 pcpp::TcpLayer* tcpLayer = parsedPacket.getLayerOfType<pcpp::TcpLayer>();
 
 if (tcpLayer == NULL){
-	printf("Couldn't find TCP layer\n");
-	continue;
+   printf("Couldn't find TCP layer\n");
+   continue;
 }
 
 // printf TCP source and dest ports, window size, and the TCP flags 
@@ -214,54 +218,80 @@ int payload_start = total_length - payload_length;
 
 if(is_tcp==4){
 
-	if (httpRequestLayer == NULL){
-			if((src_port == 25)||(src_port == 465)||(src_port == 587)||(src_port == 2525)||
-					(dst_port == 25)||(dst_port == 465)||(dst_port == 587)||(dst_port == 2525)){
-			printf("\n[ SMTP Packet ]\n");
+   if (httpRequestLayer == NULL){
+         if((src_port == 25)||(src_port == 465)||(src_port == 587)||(src_port == 2525)||
+               (dst_port == 25)||(dst_port == 465)||(dst_port == 587)||(dst_port == 2525)){
+         printf("\n[ SMTP Packet ]\n");
 
-			const u_char* packet;
-			packet = (u_char*) rawPacket.getRawData();
+         const u_char* packet;
+         packet = (u_char*) rawPacket.getRawData();
 
-			printf("Response : ");
-			for(int i = payload_start; i<=total_length; i++){
-				printf("%c", packet[i]);
-			}
-			printf("\n");
+         printf("Response : ");
+         for(int i = payload_start; i<total_length; i++){
+            printf("%c", packet[i]);
+         }
+         printf("\n");
 
-			//printf("\nCommand: ");
-			//for(int i = 137; i<=179; i++)
-			//{
-			//printf("%c ", (unsigned char) packet[i]);
-			//std::cout << packet[i] << " ";
-			//}
+         //printf("\nCommand: ");
+         //for(int i = 137; i<=179; i++)
+         //{
+         //printf("%c ", (unsigned char) packet[i]);
+         //std::cout << packet[i] << " ";
+         //}
 
-			//printf("\nResponse Parameter: ");
-			//for(int i = 137; i<=200; i++)
-			//{
-			//
-			//std::cout << packet[i] << " ";
-			//}
+         //printf("\nResponse Parameter: ");
+         //for(int i = 137; i<=200; i++)
+         //{
+         //
+         //std::cout << packet[i] << " ";
+         //}
 
-			}
-	}
+         }
+                        else if (src_port == 21 || dst_port == 21) { // FTP 패킷이라면...
+                        printf("\n[ FTP Packet ]\n");
+                        const uint8_t* packet = rawPacket.getRawData();
+
+                        uint16_t start = 14 + 20 + my_ntohs(packet[46]) * 4;
+                        uint16_t TOTAL_LENGTH = ntohs(ipLayer->getIPv4Header()->totalLength) + 14;
+                        printf("TCP header len is %d\n", my_ntohs(packet[46]) * 4);
+                        printf("start index is %d\n", start);
+                        printf("total length is %d\n", TOTAL_LENGTH);
+                        printf("\nResponse: ");
+
+                        for (int i = payload_start; i<total_length; i++) {
+                        printf("%c", packet[i]);
+                        }
+
+                        printf("\nResponse Code : ");
+                        for (int i = start; i < start + 3; i++) {
+                        printf("%c", packet[i]);
+                        }
+                        printf("\nResponse Arg : ");
+                        for (int i = start + 4; i < TOTAL_LENGTH; i++) {
+                        printf("%c", packet[i]);
+                        }
+                        printf("\n");
+                        }
+   }
+
 
 }
 
 // If It's HTTP Packet Print method, URI, host, user-agent ...
 if (httpRequestLayer != NULL){
-	printf("\n[ HTTP Packet ]\n");
+   printf("\n[ HTTP Packet ]\n");
 
-	printf("\nHTTP method: %s\n", printHttpMethod(httpRequestLayer->getFirstLine()->getMethod()).c_str());
+   printf("\nHTTP method: %s\n", printHttpMethod(httpRequestLayer->getFirstLine()->getMethod()).c_str());
 
-	printf("HTTP URI: %s\n", httpRequestLayer->getFirstLine()->getUri().c_str());
+   printf("HTTP URI: %s\n", httpRequestLayer->getFirstLine()->getUri().c_str());
 
-	printf("HTTP host: %s\n", httpRequestLayer->getFieldByName(PCPP_HTTP_HOST_FIELD)->getFieldValue().c_str());
+   printf("HTTP host: %s\n", httpRequestLayer->getFieldByName(PCPP_HTTP_HOST_FIELD)->getFieldValue().c_str());
 
-	printf("HTTP user-agent: %s\n", httpRequestLayer->getFieldByName(PCPP_HTTP_USER_AGENT_FIELD)->getFieldValue().c_str());
+   printf("HTTP user-agent: %s\n", httpRequestLayer->getFieldByName(PCPP_HTTP_USER_AGENT_FIELD)->getFieldValue().c_str());
 
-	printf("HTTP cookie: %s\n", httpRequestLayer->getFieldByName(PCPP_HTTP_COOKIE_FIELD)->getFieldValue().c_str());
+   printf("HTTP cookie: %s\n", httpRequestLayer->getFieldByName(PCPP_HTTP_COOKIE_FIELD)->getFieldValue().c_str());
 
-	printf("HTTP full URL: %s\n", httpRequestLayer->getUrl().c_str());
+   printf("HTTP full URL: %s\n", httpRequestLayer->getUrl().c_str());
 }
 
 }
