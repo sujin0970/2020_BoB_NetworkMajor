@@ -1,5 +1,14 @@
 # 2020_BoB_NetworkMajor
 
+
+# WBS
+
+
+
+
+
+# 실핼
+
 <h2> Terminal Command </h2>
 <div>
 <img width = "700" src = "https://user-images.githubusercontent.com/58834907/90235811-dd564f00-de5c-11ea-91c0-e82e561f28d8.PNG" >
